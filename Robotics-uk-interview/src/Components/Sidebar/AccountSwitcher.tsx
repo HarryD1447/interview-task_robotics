@@ -1,6 +1,7 @@
 import {
   Box,
   Flex,
+  FlexProps,
   HStack,
   Img,
   Menu,
@@ -11,24 +12,57 @@ import {
   MenuOptionGroup,
   Text,
   useColorModeValue,
+  useMenuButton,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { HiSelector } from "react-icons/hi";
 
+import BioTechLogo from "../../assets/Logos/biotechInc_Logo.png";
+import LeafBotLogo from "../../assets/Logos/LeafBotics_Logo.png";
+
+interface IAccount {
+  id: string;
+  name: string;
+  logo: string;
+}
+
+const Accounts: IAccount[] = [
+  {
+    id: "bio-tech-inc",
+    name: "Biotech Inc.",
+    logo: BioTechLogo,
+  },
+  {
+    id: "leaf-bots",
+    name: "LeafBotics.com",
+    logo: LeafBotLogo,
+  },
+];
+
 export const AccountSwitcher = () => {
+  const [activeAccount, setActiveAccount] = useState<IAccount>(Accounts[1]);
+
   return (
     <Menu>
-      <AccountSwitcherButton />
+      <AccountSwitcherButton company={activeAccount.name} logo={activeAccount.logo} />
       <MenuList shadow="lg" py="4" color={useColorModeValue("gray.600", "gray.200")} px="3">
         <Text fontWeight="medium" mb="2">
-          joe.biden@chakra-ui.com
+          theharryd987@gmail.com
         </Text>
         <MenuOptionGroup defaultValue="chakra-ui">
-          <MenuItemOption value="chakra-ui" fontWeight="semibold" rounded="md">
-            Chakra UI
-          </MenuItemOption>
-          <MenuItemOption value="careerlyft" fontWeight="semibold" rounded="md">
-            CareerLyft
-          </MenuItemOption>
+          {Accounts.map((account) => (
+            <MenuItemOption
+              value={account.id}
+              fontWeight="semibold"
+              rounded="md"
+              onClick={() => {
+                setActiveAccount(account);
+              }}
+              key={account.id}
+            >
+              {account.name}
+            </MenuItemOption>
+          ))}
         </MenuOptionGroup>
         <MenuDivider />
         <MenuItem rounded="md">Workspace settings</MenuItem>
@@ -40,13 +74,20 @@ export const AccountSwitcher = () => {
   );
 };
 
-const AccountSwitcherButton = () => {
+interface IAccountSwitcherButtonProps extends FlexProps {
+  company: string;
+  logo: string;
+}
+
+const AccountSwitcherButton = (props: IAccountSwitcherButtonProps) => {
+  const buttonProps = useMenuButton(props);
   return (
     <Flex
       as="button"
       w="full"
       display="flex"
       alignItems="center"
+      {...buttonProps}
       rounded="lg"
       bg="gray.700"
       px="3"
@@ -60,20 +101,13 @@ const AccountSwitcherButton = () => {
       _focus={{ shadow: "outline" }}
     >
       <HStack flex="1" spacing="3">
-        <Img
-          w="8"
-          h="8"
-          rounded="md"
-          objectFit="cover"
-          src="https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MzV8fG1hbiUyMHNpbWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=100"
-          alt="Chakra UI"
-        />
+        <Img w="8" h="8" rounded="md" objectFit="cover" src={props.logo} alt="Logo" />
         <Box textAlign="start">
           <Box noOfLines={1} fontWeight="semibold">
-            Chakra UI
+            Harry Drew
           </Box>
           <Box fontSize="xs" color="gray.400">
-            ID 123343
+            {props.company}
           </Box>
         </Box>
       </HStack>

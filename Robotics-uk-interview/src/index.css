@@ -1,7 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
-  --font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-family: "Lexend", sans-serif;
+
+  /* Colors */
+  --line-color: #d9d9d9;
+  --dark-text: #171923;
+  --light-text: #424551;
 }
 
 body {

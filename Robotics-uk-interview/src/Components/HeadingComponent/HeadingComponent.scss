@@ -1,0 +1,18 @@
+.heading-component__container {
+  border-bottom: 2px solid var(--line-color);
+  padding-bottom: 20px;
+  min-height: 120px;
+}
+
+.heading-component__title {
+  font-size: 38px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: auto;
+  padding-bottom: 10px;
+}
+
+.heading-component__description {
+  font-weight: 400;
+  color: var(--light-text);
+}

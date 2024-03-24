@@ -1,5 +1,5 @@
 .heading-component__container {
-  border-bottom: 2px solid var(--line-color);
+  border-bottom: 1px solid var(--line-color);
   padding-bottom: 20px;
   min-height: 120px;
 }
@@ -9,7 +9,7 @@
   font-weight: 500;
   color: var(--text-color);
   margin-bottom: auto;
-  padding-bottom: 10px;
+  padding-bottom: 5px;
 }
 
 .heading-component__description {

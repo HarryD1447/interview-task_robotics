@@ -1,0 +1,37 @@
+.schedule-card__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  //   background-color: red;
+  margin: 10px 0px;
+  border-radius: 5px;
+  //   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+  border: 1px solid var(--line-color);
+  user-select: none;
+  overflow: hidden;
+  background-color: #fbfbfb;
+}
+
+.schedule-card__icon-container {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.schedule-card__icon-container:hover {
+  background-color: var(--hover-color);
+  cursor: pointer;
+}
+
+.schedule-card__name-container {
+  flex: 1;
+  //   background-color: blue;
+  padding-left: 10px;
+}
+
+.schedule-card__icon {
+  font-size: 26px;
+  color: var(--light-text);
+}

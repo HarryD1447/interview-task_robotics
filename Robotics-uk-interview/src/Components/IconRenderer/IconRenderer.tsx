@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Filter5340212,
   Industry13878015,

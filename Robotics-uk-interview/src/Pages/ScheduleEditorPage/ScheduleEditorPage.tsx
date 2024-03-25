@@ -11,12 +11,17 @@ import ReactFlow, {
   Background,
   BackgroundVariant,
   Controls,
+  MarkerType,
   OnConnect,
   ReactFlowInstance,
   addEdge,
   useEdgesState,
   useNodesState,
+  Node,
+  Edge,
 } from "reactflow";
+import BaseCustomFlowCard from "../../Components/_FlowEditor/BaseCustomFlowCard/BaseCustomFlowCard";
+import TransferFlowCard from "../../Components/_FlowEditor/TransferFlowCard";
 
 // Define the interfaces for the ScheduleEditorPage
 export interface ISidebarOperation {
@@ -93,11 +98,27 @@ const DEFAULT_SCHEDULES: ISchedule[] = [
   },
 ];
 
-const initialNodes = [
+const initialNodes: Node[] = [
   { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
   { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
 ];
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+const initialEdges: Edge[] = [
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    type: "smoothstep",
+    pathOptions: {
+      borderRadius: 5,
+    },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      width: 18,
+      height: 18,
+      color: "#B6B6BC",
+    },
+  },
+];
 
 enum ActiveTab {
   Schedules,
@@ -106,33 +127,45 @@ enum ActiveTab {
 }
 
 const ScheduleEditorPage = () => {
+  const [schedules, setSchedules] = useState<ISchedule[]>(DEFAULT_SCHEDULES);
+  const [operations, setOperations] = useState<IOperation[]>(DEFAULT_OPERATIONS);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.Schedules);
+
+  //Reference to the sidebar container holder
   const sidebarContainerRef = React.useRef<HTMLDivElement>(null);
 
   //Drag and drop flow editor container
   const flowEditorContainerRef = React.useRef<HTMLDivElement>(null);
-  const [containerDimensions, setContainerDimensions] = React.useState({
-    width: 0,
-    height: 0,
-  });
-  const [containerPosition, setContainerPosition] = React.useState({
-    x: 0,
-    y: 0,
-  });
+  const [containerDimensions, setContainerDimensions] = React.useState({ width: 0, height: 0 });
+  const [containerPosition, setContainerPosition] = React.useState({ x: 0, y: 0 });
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+  const nodeTypes = { "type-transfer": TransferFlowCard };
+
   const onConnect: OnConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => {
+      const edge = {
+        ...params,
+        type: "smoothstep",
+        pathOptions: {
+          borderRadius: 5,
+        },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 18,
+          height: 18,
+          color: "#B6B6BC",
+        },
+      };
+      setEdges((eds) => addEdge(edge, eds));
+    },
     [setEdges]
   );
 
   const proOptions = { hideAttribution: true };
-
-  const [schedules, setSchedules] = useState<ISchedule[]>(DEFAULT_SCHEDULES);
-  const [operations, setOperations] = useState<IOperation[]>(DEFAULT_OPERATIONS);
-  const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.Schedules);
 
   const placeNode = (x: number, y: number, nodeType: IOperation) => {
     //Check we have a react flow instance
@@ -149,9 +182,12 @@ const ScheduleEditorPage = () => {
       const position = reactFlowInstance.screenToFlowPosition({ x, y });
       //Generate a guid for the node
       const id = `node-${Math.random()}`;
+
+      //Remove all space from the node name
+      const nodeTypeName = nodeType.name.replace(/\s/g, "");
       const newNode = {
         id: id,
-        type: "default",
+        type: `type-${nodeTypeName.toLowerCase()}`,
         position: position,
         data: { label: nodeType.name },
       };
@@ -160,6 +196,7 @@ const ScheduleEditorPage = () => {
     }
   };
 
+  //Listen for the flow window resizing
   //---------------------------------------------------------------------------------------------------
 
   const handleWindowResize = () => {
@@ -173,8 +210,6 @@ const ScheduleEditorPage = () => {
         x: containerRect.left,
         y: containerRect.top,
       });
-
-      console.log("Container Rect", containerRect);
     }
   };
 
@@ -208,6 +243,9 @@ const ScheduleEditorPage = () => {
               onConnect={onConnect}
               proOptions={proOptions}
               onInit={setReactFlowInstance}
+              panOnScroll={true}
+              selectionOnDrag={true}
+              nodeTypes={nodeTypes}
             >
               <Controls />
               <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#c5c5c5" />

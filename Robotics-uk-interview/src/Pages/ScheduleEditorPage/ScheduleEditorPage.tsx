@@ -241,11 +241,7 @@ const ScheduleEditorPage = () => {
           <div className="schedule-sidebar__content-container">
             {activeTab === ActiveTab.Schedules && <ScheduleSidebar schedules={schedules} />}
             {activeTab === ActiveTab.Operations && (
-              <OperationsSidebar
-                operations={operations}
-                placeNode={placeNode}
-                sidebarContainerRef={sidebarContainerRef}
-              />
+              <OperationsSidebar operations={operations} placeNode={placeNode} />
             )}
           </div>
         </div>

@@ -8,40 +8,15 @@ import Draggable, { DraggableData, DraggableEvent, DraggableEventHandler } from 
 interface IOperationsSidebarProps {
   operations: IOperation[];
   placeNode: (rightXOffset: number, topYOffset: number, nodeType: IOperation) => void;
-  sidebarContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-const OperationsSidebar = ({
-  operations,
-  placeNode,
-  sidebarContainerRef,
-}: IOperationsSidebarProps) => {
-  const [sidebarTopLeftLocation, setSidebarTopLeftLocation] = React.useState({
-    x: 0,
-    y: 0,
-  });
-
-  //Calculate the top left location of the sidebar
-  React.useEffect(() => {
-    if (sidebarContainerRef.current) {
-      const sidebarRect = sidebarContainerRef.current.getBoundingClientRect();
-      setSidebarTopLeftLocation({
-        x: sidebarRect.left,
-        y: sidebarRect.top,
-      });
-    }
-  }, [sidebarContainerRef]);
-
+const OperationsSidebar = ({ operations, placeNode }: IOperationsSidebarProps) => {
   return (
     <div>
       {operations.map((operation) => (
         <OperationsSidebarDraggableCard
           key={operation.id}
           operation={operation}
-          parentLocation={{
-            defaultLocationX: sidebarTopLeftLocation.x,
-            defaultLocationY: sidebarTopLeftLocation.y,
-          }}
           placeNode={placeNode}
         />
       ))}
@@ -49,27 +24,20 @@ const OperationsSidebar = ({
   );
 };
 
-interface IParentLocation {
-  defaultLocationX: number;
-  defaultLocationY: number;
-}
-
 interface IOperationsSidebarDraggableCardProps {
   operation: IOperation;
-  parentLocation: IParentLocation;
   placeNode: (rightXOffset: number, topYOffset: number, nodeType: IOperation) => void;
 }
 
 const OperationsSidebarDraggableCard = ({
   operation,
-  parentLocation,
   placeNode,
 }: IOperationsSidebarDraggableCardProps) => {
   //Fix issue with React.StrictMode and ReactDOM.findDOMNode by using useRef
   //https://stackoverflow.com/questions/63603902/finddomnode-is-deprecated-in-strictmode-finddomnode-was-passed-an-instance-of-d
   const nodeRef = React.useRef(null);
   const cardContainerRef = React.useRef<HTMLDivElement>(null);
-  const [relativePositionToSidebar, setRelativePositionToSidebar] = React.useState({ x: 0, y: 0 });
+  const [globalInitialCardPos, setGlobalInitialCardPos] = React.useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = React.useState(false);
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
 
@@ -78,24 +46,15 @@ const OperationsSidebarDraggableCard = ({
     //Reset the position of the card
     setPosition({ x: 0, y: 0 });
 
-    console.log("DATA", data);
-
-    //Calculate the static component offset from the sidebar
-    //const staticXOffset = relativePositionToSidebar.x - parentLocation.defaultLocationX;
-    //const staticYOffset = relativePositionToSidebar.y - parentLocation.defaultLocationY;
-
-    placeNode(
-      data.x + relativePositionToSidebar.x,
-      relativePositionToSidebar.y + data.y,
-      operation
-    );
+    //Place the node in the flow editor
+    placeNode(data.x + globalInitialCardPos.x, globalInitialCardPos.y + data.y, operation);
   };
 
   //Calculate the starting position of the card
   const calculateStartingPosition = () => {
     if (cardContainerRef.current) {
       const cardRect = cardContainerRef.current.getBoundingClientRect();
-      setRelativePositionToSidebar({
+      setGlobalInitialCardPos({
         x: cardRect.left,
         y: cardRect.top,
       });

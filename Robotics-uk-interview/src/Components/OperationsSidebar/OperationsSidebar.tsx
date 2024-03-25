@@ -81,13 +81,18 @@ const OperationsSidebarDraggableCard = ({
     console.log("DATA", data);
 
     //Calculate the static component offset from the sidebar
-    const staticXOffset = relativePositionToSidebar.x - parentLocation.defaultLocationX;
-    const staticYOffset = relativePositionToSidebar.y - parentLocation.defaultLocationY;
+    //const staticXOffset = relativePositionToSidebar.x - parentLocation.defaultLocationX;
+    //const staticYOffset = relativePositionToSidebar.y - parentLocation.defaultLocationY;
 
-    placeNode(data.x + staticXOffset, staticYOffset + data.y, operation);
+    placeNode(
+      data.x + relativePositionToSidebar.x,
+      relativePositionToSidebar.y + data.y,
+      operation
+    );
   };
 
-  useEffect(() => {
+  //Calculate the starting position of the card
+  const calculateStartingPosition = () => {
     if (cardContainerRef.current) {
       const cardRect = cardContainerRef.current.getBoundingClientRect();
       setRelativePositionToSidebar({
@@ -95,7 +100,18 @@ const OperationsSidebarDraggableCard = ({
         y: cardRect.top,
       });
     }
+  };
+
+  //Calculate the starting position of the card
+  useEffect(() => {
+    calculateStartingPosition();
   }, [cardContainerRef]);
+
+  //Update the starting position of the card on window resize
+  useEffect(() => {
+    window.addEventListener("resize", calculateStartingPosition);
+    return () => window.removeEventListener("resize", calculateStartingPosition);
+  }, []);
 
   return (
     <div

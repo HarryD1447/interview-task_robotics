@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./ScheduleEditorPage.scss";
+import "reactflow/dist/style.css";
 import HeadingComponent from "../../Components/HeadingComponent/HeadingComponent";
 import { AiOutlineMore } from "react-icons/ai";
 import TabComponent from "../../Components/TabComponent/TabComponent";
@@ -11,6 +12,7 @@ import ReactFlow, {
   BackgroundVariant,
   Controls,
   OnConnect,
+  ReactFlowInstance,
   addEdge,
   useEdgesState,
   useNodesState,
@@ -106,6 +108,18 @@ enum ActiveTab {
 const ScheduleEditorPage = () => {
   const sidebarContainerRef = React.useRef<HTMLDivElement>(null);
 
+  //Drag and drop flow editor container
+  const flowEditorContainerRef = React.useRef<HTMLDivElement>(null);
+  const [containerDimensions, setContainerDimensions] = React.useState({
+    width: 0,
+    height: 0,
+  });
+  const [containerPosition, setContainerPosition] = React.useState({
+    x: 0,
+    y: 0,
+  });
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -120,9 +134,62 @@ const ScheduleEditorPage = () => {
   const [operations, setOperations] = useState<IOperation[]>(DEFAULT_OPERATIONS);
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.Schedules);
 
-  const placeNode = (rightXOffset: number, topYOffset: number, nodeType: IOperation) => {
-    console.log("Placing Node", rightXOffset, topYOffset, nodeType);
+  const placeNode = (x: number, y: number, nodeType: IOperation) => {
+    //Check we have a react flow instance
+    if (!reactFlowInstance) return;
+
+    //Check that the card is within the flow editor container
+    if (
+      x >= containerPosition.x &&
+      x <= containerPosition.x + containerDimensions.width &&
+      y >= containerPosition.y &&
+      y <= containerPosition.y + containerDimensions.height
+    ) {
+      //Calculate the position of the node relative to the flow editor container
+      const position = reactFlowInstance.screenToFlowPosition({ x, y });
+      //Generate a guid for the node
+      const id = `node-${Math.random()}`;
+      const newNode = {
+        id: id,
+        type: "default",
+        position: position,
+        data: { label: nodeType.name },
+      };
+      //Add the node to the nodes list
+      setNodes((nodes) => nodes.concat(newNode));
+    }
   };
+
+  //---------------------------------------------------------------------------------------------------
+
+  const handleWindowResize = () => {
+    if (flowEditorContainerRef.current) {
+      const containerRect = flowEditorContainerRef.current.getBoundingClientRect();
+      setContainerDimensions({
+        width: containerRect.width,
+        height: containerRect.height,
+      });
+      setContainerPosition({
+        x: containerRect.left,
+        y: containerRect.top,
+      });
+
+      console.log("Container Rect", containerRect);
+    }
+  };
+
+  //Listen for ref changes
+  useEffect(() => {
+    handleWindowResize();
+  }, [flowEditorContainerRef]);
+
+  //Listen for window resize
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
+
+  //---------------------------------------------------------------------------------------------------
 
   return (
     <div className="schedule-editor-page__container">
@@ -132,7 +199,7 @@ const ScheduleEditorPage = () => {
       />
       <div className="schedule-editor__inner-container">
         <div className="schedule-editor__inner-container__left-side">
-          <div className="flow-designer__container">
+          <div className="flow-designer__container" ref={flowEditorContainerRef}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -140,6 +207,7 @@ const ScheduleEditorPage = () => {
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               proOptions={proOptions}
+              onInit={setReactFlowInstance}
             >
               <Controls />
               <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#c5c5c5" />

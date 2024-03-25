@@ -18,6 +18,7 @@ const OperationsSidebar = ({ operations }: IOperationsSidebarProps) => {
           details={operation}
           rightIcon={<AiOutlineSetting className="operations-card__settings-icon" />}
           tooltip="Settings"
+          fontSize={26}
         />
       ))}
     </div>

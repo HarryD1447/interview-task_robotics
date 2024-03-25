@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 20px 30px;
+
   //   background-color: red;
 }
 
@@ -17,44 +17,44 @@
 }
 
 .schedule-editor__inner-container__right-side {
-  width: 320px;
+  width: 340px;
   // background-color: blue;
   border-left: 1px solid var(--line-color);
   display: flex;
   flex-direction: column;
 }
 
-.schedule-editor__schedule-list__container {
-  height: 300px;
-  // background-color: blue;
-  border-bottom: 1px solid var(--line-color);
-  overflow-y: scroll;
-  padding: 15px;
-  padding-right: 5px;
+.schedule-sidebar__title {
+  font-size: 1.25rem;
+  font-weight: 400;
+  padding: 18px;
 }
 
-.schedule-editor__operations-list__container {
-  flex: 1;
-  // background-color: red;
-  overflow-y: scroll;
-  padding: 15px;
-  padding-right: 5px;
-}
-
-.schedule-editor__sidebar__title__container {
+.schedule-sidebar__title-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.schedule-editor__sidebar-title {
-  font-size: 20px;
-  font-weight: 500;
+.schedule-sidebar__more-icon {
+  font-size: 24px;
+  margin-right: 20px;
 }
 
-.schedule-editor__schedule-list__add-schedule-button__icon {
-  width: 17px;
-  height: 17px;
+.schedule-sidebar__schedule-sidebar-title-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line-color);
+  margin-top: 7px;
+}
+
+.schedule-sidebar-tabs__container {
+  margin-left: 18px;
+  display: flex;
+}
+
+.schedule-sidebar__content-container {
+  // background-color: red;
+  padding: 18px;
 }
 
 // Scroll bar styling

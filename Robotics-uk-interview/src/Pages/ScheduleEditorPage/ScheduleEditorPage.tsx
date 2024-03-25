@@ -22,6 +22,10 @@ import ReactFlow, {
 } from "reactflow";
 import BaseCustomFlowCard from "../../Components/_FlowEditor/BaseCustomFlowCard/BaseCustomFlowCard";
 import TransferFlowCard from "../../Components/_FlowEditor/TransferFlowCard";
+import OperationFlowCard from "../../Components/_FlowEditor/OperationFlowCard";
+import StartBeginFlowCard from "../../Components/_FlowEditor/StartBeginFlowCard";
+import SleepFlowCard from "../../Components/_FlowEditor/SleepFlowCard";
+import EndScheduleFlowCard from "../../Components/_FlowEditor/EndScheduleFlowCard";
 
 // Define the interfaces for the ScheduleEditorPage
 export interface ISidebarOperation {
@@ -143,7 +147,13 @@ const ScheduleEditorPage = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const nodeTypes = { "type-transfer": TransferFlowCard };
+  const nodeTypes = {
+    "type-transfer": TransferFlowCard,
+    "type-operation": OperationFlowCard,
+    "type-start/begin": StartBeginFlowCard,
+    "type-sleep": SleepFlowCard,
+    "type-endschedulethread": EndScheduleFlowCard,
+  };
 
   const onConnect: OnConnect = useCallback(
     (params) => {
@@ -185,9 +195,11 @@ const ScheduleEditorPage = () => {
 
       //Remove all space from the node name
       const nodeTypeName = nodeType.name.replace(/\s/g, "");
+      const nodeTypeLower = `type-${nodeTypeName.toLowerCase()}`;
+      console.log(nodeTypeLower);
       const newNode = {
         id: id,
-        type: `type-${nodeTypeName.toLowerCase()}`,
+        type: nodeTypeLower,
         position: position,
         data: { label: nodeType.name },
       };

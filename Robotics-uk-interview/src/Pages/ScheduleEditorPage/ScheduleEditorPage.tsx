@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./ScheduleEditorPage.scss";
 import HeadingComponent from "../../Components/HeadingComponent/HeadingComponent";
-import OperationButton from "../../Components/OperationButton/OperationButton";
-import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
-import ProjectSidebarCard from "../../Components/ProjectSidebarCard/ProjectSidebarCard";
-import FlowDesigner from "../../Components/FlowDesigner/FlowDesigner";
+import { AiOutlineMore } from "react-icons/ai";
 import TabComponent from "../../Components/TabComponent/TabComponent";
 import ScheduleSidebar from "../../Components/ScheduleSidebar/ScheduleSidebar";
 import { IconType } from "../../Components/IconRenderer/IconRenderer";
 import OperationsSidebar from "../../Components/OperationsSidebar/OperationsSidebar";
+import ReactFlow, {
+  Background,
+  BackgroundVariant,
+  Controls,
+  OnConnect,
+  addEdge,
+  useEdgesState,
+  useNodesState,
+} from "reactflow";
 
 // Define the interfaces for the ScheduleEditorPage
 export interface ISidebarOperation {
@@ -85,6 +91,12 @@ const DEFAULT_SCHEDULES: ISchedule[] = [
   },
 ];
 
+const initialNodes = [
+  { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
+  { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
+];
+const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+
 enum ActiveTab {
   Schedules,
   Operations,
@@ -92,9 +104,25 @@ enum ActiveTab {
 }
 
 const ScheduleEditorPage = () => {
+  const sidebarContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  const onConnect: OnConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
+
+  const proOptions = { hideAttribution: true };
+
   const [schedules, setSchedules] = useState<ISchedule[]>(DEFAULT_SCHEDULES);
   const [operations, setOperations] = useState<IOperation[]>(DEFAULT_OPERATIONS);
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.Schedules);
+
+  const placeNode = (rightXOffset: number, topYOffset: number, nodeType: IOperation) => {
+    console.log("Placing Node", rightXOffset, topYOffset, nodeType);
+  };
 
   return (
     <div className="schedule-editor-page__container">
@@ -104,9 +132,21 @@ const ScheduleEditorPage = () => {
       />
       <div className="schedule-editor__inner-container">
         <div className="schedule-editor__inner-container__left-side">
-          <FlowDesigner />
+          <div className="flow-designer__container">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              proOptions={proOptions}
+            >
+              <Controls />
+              <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#c5c5c5" />
+            </ReactFlow>
+          </div>
         </div>
-        <div className="schedule-editor__inner-container__right-side">
+        <div className="schedule-editor__inner-container__right-side" ref={sidebarContainerRef}>
           <div className="schedule-sidebar__title-container">
             <h3 className="schedule-sidebar__title">Robotic Hand Project</h3>
             <AiOutlineMore className="schedule-sidebar__more-icon" />
@@ -132,7 +172,13 @@ const ScheduleEditorPage = () => {
           </div>
           <div className="schedule-sidebar__content-container">
             {activeTab === ActiveTab.Schedules && <ScheduleSidebar schedules={schedules} />}
-            {activeTab === ActiveTab.Operations && <OperationsSidebar operations={operations} />}
+            {activeTab === ActiveTab.Operations && (
+              <OperationsSidebar
+                operations={operations}
+                placeNode={placeNode}
+                sidebarContainerRef={sidebarContainerRef}
+              />
+            )}
           </div>
         </div>
       </div>

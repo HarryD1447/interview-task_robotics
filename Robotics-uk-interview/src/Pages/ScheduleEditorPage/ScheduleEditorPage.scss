@@ -57,6 +57,13 @@
   padding: 18px;
 }
 
+.flow-designer__container {
+  flex: 1;
+  background-color: #f7f8fa;
+  width: 100%;
+  height: 100%;
+}
+
 // Scroll bar styling
 .schedule-editor__custom-scrollbar {
   // Custom scrollbar styling

@@ -1,18 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { IOperation } from "../../Pages/ScheduleEditorPage/ScheduleEditorPage";
 import ProjectSidebarCard from "../ProjectSidebarCard/ProjectSidebarCard";
 import { AiOutlineSetting } from "react-icons/ai";
 import "./OperationsSidebar.scss";
-import Draggable, { DraggableEventHandler } from "react-draggable";
+import Draggable, { DraggableData, DraggableEvent, DraggableEventHandler } from "react-draggable";
 
 interface IOperationsSidebarProps {
   operations: IOperation[];
+  placeNode: (rightXOffset: number, topYOffset: number, nodeType: IOperation) => void;
+  sidebarContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-const OperationsSidebar = ({ operations }: IOperationsSidebarProps) => {
-  const onDragStop: DraggableEventHandler = (e, data) => {
-    console.log("Drag Stopped", data);
-  };
+const OperationsSidebar = ({
+  operations,
+  placeNode,
+  sidebarContainerRef,
+}: IOperationsSidebarProps) => {
+  const [sidebarTopLeftLocation, setSidebarTopLeftLocation] = React.useState({
+    x: 0,
+    y: 0,
+  });
+
+  //Calculate the top left location of the sidebar
+  React.useEffect(() => {
+    if (sidebarContainerRef.current) {
+      const sidebarRect = sidebarContainerRef.current.getBoundingClientRect();
+      setSidebarTopLeftLocation({
+        x: sidebarRect.left,
+        y: sidebarRect.top,
+      });
+    }
+  }, [sidebarContainerRef]);
 
   return (
     <div>
@@ -20,43 +38,74 @@ const OperationsSidebar = ({ operations }: IOperationsSidebarProps) => {
         <OperationsSidebarDraggableCard
           key={operation.id}
           operation={operation}
-          onDragStop={onDragStop}
+          parentLocation={{
+            defaultLocationX: sidebarTopLeftLocation.x,
+            defaultLocationY: sidebarTopLeftLocation.y,
+          }}
+          placeNode={placeNode}
         />
       ))}
     </div>
   );
 };
 
+interface IParentLocation {
+  defaultLocationX: number;
+  defaultLocationY: number;
+}
+
 interface IOperationsSidebarDraggableCardProps {
   operation: IOperation;
-  onDragStop: DraggableEventHandler;
+  parentLocation: IParentLocation;
+  placeNode: (rightXOffset: number, topYOffset: number, nodeType: IOperation) => void;
 }
 
 const OperationsSidebarDraggableCard = ({
   operation,
-  onDragStop,
+  parentLocation,
+  placeNode,
 }: IOperationsSidebarDraggableCardProps) => {
   //Fix issue with React.StrictMode and ReactDOM.findDOMNode by using useRef
   //https://stackoverflow.com/questions/63603902/finddomnode-is-deprecated-in-strictmode-finddomnode-was-passed-an-instance-of-d
   const nodeRef = React.useRef(null);
+  const cardContainerRef = React.useRef<HTMLDivElement>(null);
+  const [relativePositionToSidebar, setRelativePositionToSidebar] = React.useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = React.useState(false);
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
 
-  const handleDragStopped = (e: any, data: any) => {
+  const handleDragStopped = (e: DraggableEvent, data: DraggableData) => {
     setIsDragging(false);
     //Reset the position of the card
     setPosition({ x: 0, y: 0 });
+
+    console.log("DATA", data);
+
+    //Calculate the static component offset from the sidebar
+    const staticXOffset = relativePositionToSidebar.x - parentLocation.defaultLocationX;
+    const staticYOffset = relativePositionToSidebar.y - parentLocation.defaultLocationY;
+
+    placeNode(data.x + staticXOffset, staticYOffset + data.y, operation);
   };
+
+  useEffect(() => {
+    if (cardContainerRef.current) {
+      const cardRect = cardContainerRef.current.getBoundingClientRect();
+      setRelativePositionToSidebar({
+        x: cardRect.left,
+        y: cardRect.top,
+      });
+    }
+  }, [cardContainerRef]);
 
   return (
     <div
       style={{
         position: "relative",
       }}
+      ref={cardContainerRef}
     >
       <Draggable
         onStop={(e, data) => {
-          onDragStop(e, data);
           handleDragStopped(e, data);
         }}
         onStart={() => setIsDragging(true)}

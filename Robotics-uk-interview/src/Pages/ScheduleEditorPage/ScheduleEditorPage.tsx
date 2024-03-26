@@ -31,6 +31,7 @@ import EndScheduleFlowCard from "../../Components/_FlowEditor/EndScheduleFlowCar
 import { CustomNodeData } from "../../types/CustomNodeData";
 import { NodeSelectContext } from "../../context/NodeSelectContext";
 import { animate } from "popmotion";
+import FlowSidebar from "../../Components/FlowSidebar/FlowSidebar";
 
 // Define the interfaces for the ScheduleEditorPage
 export interface ISidebarOperation {
@@ -113,8 +114,9 @@ enum ActiveTab {
   Layers,
 }
 
-const NODE_EDITOR_SIDEBAR_WIDTH = 300;
+const NODE_EDITOR_SIDEBAR_WIDTH = 400;
 const NODE_EDITOR_ANIMATION_OFFSET_Y = 100;
+const NODE_CARD_WIDTH = 190;
 
 const ScheduleEditorPage = () => {
   const [schedules, setSchedules] = useState<ISchedule[]>(DEFAULT_SCHEDULES);
@@ -130,6 +132,10 @@ const ScheduleEditorPage = () => {
   const [containerDimensions, setContainerDimensions] = React.useState({ width: 0, height: 0 });
   const [containerPosition, setContainerPosition] = React.useState({ x: 0, y: 0 });
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+
+  //Node editor sidebar
+  const [showingNodeEditorSidebar, setShowingNodeEditorSidebar] = useState<boolean>(false);
+  const [selectedNode, setSelectedNode] = useState<CustomNodeData | null>(null);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -245,11 +251,18 @@ const ScheduleEditorPage = () => {
     const halfContainerWidth = (containerDimensions.width - NODE_EDITOR_SIDEBAR_WIDTH) / 2;
     const halfContainerHeight = containerDimensions.height / 2;
 
-    const targetX = xPos + NODE_EDITOR_SIDEBAR_WIDTH + halfContainerWidth;
+    const targetX = xPos + halfContainerWidth + NODE_EDITOR_SIDEBAR_WIDTH - NODE_CARD_WIDTH / 2;
     const targetY = yPos + halfContainerHeight - NODE_EDITOR_ANIMATION_OFFSET_Y;
     const zoom = 1;
 
+    //Animate the flow editor to the node
     handleTransform(targetX, targetY, zoom);
+
+    //Show the node editor sidebar
+    setShowingNodeEditorSidebar(true);
+
+    //Set the selected node
+    setSelectedNode(node);
   };
 
   return (
@@ -279,6 +292,16 @@ const ScheduleEditorPage = () => {
               </ReactFlow>
             </div>
           </NodeSelectContext.Provider>
+          <div
+            className={`schedule-editor__node-sidebar ${
+              showingNodeEditorSidebar ? "node-sidebar--active" : ""
+            }`}
+          >
+            <FlowSidebar
+              data={selectedNode}
+              closeSidebar={() => setShowingNodeEditorSidebar(false)}
+            />
+          </div>
         </div>
         <div className="schedule-editor__inner-container__right-side" ref={sidebarContainerRef}>
           <div className="schedule-sidebar__title-container">

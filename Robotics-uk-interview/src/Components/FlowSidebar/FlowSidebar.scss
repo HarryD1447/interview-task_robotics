@@ -1,0 +1,61 @@
+.flow-sidebar__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.flow-sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.flow-sidebar__title-icon-container {
+  width: 41px;
+  height: 41px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.flow-sidebar__title-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.flow-sidebar__title {
+  font-size: 22px;
+  margin-left: 15px;
+}
+
+.flow-sidebar__close-sidebar-container {
+  cursor: pointer;
+  margin-left: auto;
+  padding: 5px;
+  border-radius: 5px;
+  color: #bababa;
+}
+
+.flow-sidebar__close-sidebar-container:hover {
+  background-color: var(--hover-color);
+  color: var(--dark-text);
+}
+
+.flow-sidebar__close-sidebar-icon {
+  font-size: 26px;
+}
+
+// Flow sidebar tabs
+.flow-sidebar__nav-menu-container {
+  border-bottom: 1px solid var(--line-color);
+  margin-top: 12px;
+}
+
+.flow-sidebar__content-container {
+  flex: 1;
+  padding: 25px;
+  padding-right: 30px;
+}

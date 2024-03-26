@@ -1,0 +1,40 @@
+.component-with-label__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.component-with-label__title-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  position: relative;
+  z-index: 10000;
+}
+
+.component-with-label__title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 3px;
+  user-select: none;
+}
+
+.component-with-label__tooltip-icon {
+  margin-left: 5px;
+  cursor: pointer;
+  color: #ccc;
+
+  position: relative;
+}
+
+.component-with-label__content-container {
+  flex: 1;
+  width: 100%;
+}
+
+.component-width-label__tooltip-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10000;
+  background-color: red;
+}

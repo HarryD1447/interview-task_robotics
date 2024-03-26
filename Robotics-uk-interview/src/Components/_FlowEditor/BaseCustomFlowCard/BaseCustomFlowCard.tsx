@@ -43,6 +43,13 @@ const BaseCustomFlowCard = ({
     const nodeData: CustomNodeData = {
       actionType: operationType,
       id: nodeProps.id,
+      operation: {
+        backgroundColor: bgColor,
+        color: color,
+        icon: icon,
+        name: title,
+        id: nodeProps.id,
+      },
     };
 
     //Open the editor menu
@@ -59,6 +66,7 @@ const BaseCustomFlowCard = ({
             ...handleStyle,
             background: bgColor,
             border: `1px solid ${color}`,
+            zIndex: 1,
           }}
         />
       )}

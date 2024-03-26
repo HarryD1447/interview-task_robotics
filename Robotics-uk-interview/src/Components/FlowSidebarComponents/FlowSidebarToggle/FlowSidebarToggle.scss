@@ -1,0 +1,19 @@
+.flow-sidebar-toggle__outer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flow-sidebar-toggle__button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  margin-right: 7px;
+  transform: scale(1.2);
+}
+
+.flow-sidebar-toggle__inner-container {
+  font-size: 13px;
+  color: #a8a8a8;
+}

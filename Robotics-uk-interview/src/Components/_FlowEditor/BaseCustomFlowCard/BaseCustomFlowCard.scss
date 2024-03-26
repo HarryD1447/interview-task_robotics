@@ -1,9 +1,9 @@
 .base-custom-flow-card__inner-container {
+  position: relative;
   width: 190px;
   min-height: 70px;
   background-color: white;
   //   border: 1px solid var(--line-color);
-  box-shadow: 0px 0px 8px 5px rgba(0, 0, 0, 0.02);
   border-radius: 5px;
   border: 1px solid;
 
@@ -25,4 +25,9 @@
 
 .base-flow-card__body-container {
   padding: 7px;
+}
+
+.base-flow-card__settings-icon {
+  cursor: pointer;
+  font-size: 20px;
 }

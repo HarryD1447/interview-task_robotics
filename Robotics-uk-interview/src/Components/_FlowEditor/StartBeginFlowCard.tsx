@@ -15,7 +15,10 @@ const StartBeginFlowCard = (props: NodeProps) => {
       nodeProps={props}
       operationType={OperationType.Start}
     >
-      <span>Hello</span>
+      <div className="flow-card__container">
+        <span className="flow-card__label">Trigger Mode:</span>
+        <span className="flow-card__value">Auto</span>
+      </div>
     </BaseCustomFlowCard>
   );
 };

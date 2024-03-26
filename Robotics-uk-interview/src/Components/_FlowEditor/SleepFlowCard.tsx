@@ -3,6 +3,7 @@ import BaseCustomFlowCard from "./BaseCustomFlowCard/BaseCustomFlowCard";
 import { IconType } from "../IconRenderer/IconRenderer";
 import { NodeProps } from "reactflow";
 import { OperationType } from "../../types/OperationType";
+import "./SleepFlowCard.scss";
 
 const SleepFlowCard = (props: NodeProps) => {
   return (
@@ -14,7 +15,10 @@ const SleepFlowCard = (props: NodeProps) => {
       nodeProps={props}
       operationType={OperationType.Sleep}
     >
-      <span>Hello</span>
+      <div className="flow-card__container">
+        <span className="flow-card__label">Delay Time:</span>
+        <span className="flow-card__value">0.30s</span>
+      </div>
     </BaseCustomFlowCard>
   );
 };

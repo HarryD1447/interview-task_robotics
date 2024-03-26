@@ -14,7 +14,10 @@ const OperationFlowCard = (props: NodeProps) => {
       nodeProps={props}
       operationType={OperationType.Operation}
     >
-      <span>Hello</span>
+      <div className="flow-card__container">
+        <span className="flow-card__label">Action:</span>
+        <span className="flow-card__value">MoveUp()</span>
+      </div>
     </BaseCustomFlowCard>
   );
 };

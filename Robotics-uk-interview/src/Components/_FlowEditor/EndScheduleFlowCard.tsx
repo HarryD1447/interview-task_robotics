@@ -15,7 +15,10 @@ const EndScheduleFlowCard = (props: NodeProps) => {
       nodeProps={props}
       operationType={OperationType.End}
     >
-      <span>Hello</span>
+      <div className="flow-card__container">
+        <span className="flow-card__label">Logging:</span>
+        <span className="flow-card__value">On</span>
+      </div>
     </BaseCustomFlowCard>
   );
 };

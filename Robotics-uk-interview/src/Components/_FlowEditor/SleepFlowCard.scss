@@ -1,0 +1,17 @@
+.flow-card__container {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.flow-card__label,
+.flow-card__value {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--light-text);
+}
+
+.flow-card__value {
+  color: var(--dark-text);
+  font-weight: 600;
+}

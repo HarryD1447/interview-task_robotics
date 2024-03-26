@@ -1,0 +1,25 @@
+.transfer-flow-card__container {
+  padding: 5px;
+  width: 230px;
+}
+
+.transfer-flow-card__list-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.transfer-flow-card__label,
+.transfer-flow-card__value {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--light-text);
+}
+
+.tranfer-flow-card__divider {
+  margin-top: 12px;
+  margin-bottom: 15px;
+  width: 244px;
+  height: 1px;
+  margin-left: -12px;
+}

@@ -2,6 +2,7 @@ import React from "react";
 import BaseCustomFlowCard from "./BaseCustomFlowCard/BaseCustomFlowCard";
 import { IconType } from "../IconRenderer/IconRenderer";
 import { NodeProps } from "reactflow";
+import { OperationType } from "../../types/OperationType";
 
 const SleepFlowCard = (props: NodeProps) => {
   return (
@@ -11,6 +12,7 @@ const SleepFlowCard = (props: NodeProps) => {
       icon={IconType.Sleep}
       title="Sleep"
       nodeProps={props}
+      operationType={OperationType.Sleep}
     >
       <span>Hello</span>
     </BaseCustomFlowCard>

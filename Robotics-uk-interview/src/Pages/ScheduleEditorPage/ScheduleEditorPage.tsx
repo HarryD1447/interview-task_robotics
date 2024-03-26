@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./ScheduleEditorPage.scss";
 import "reactflow/dist/style.css";
 import HeadingComponent from "../../Components/HeadingComponent/HeadingComponent";
@@ -19,6 +19,8 @@ import ReactFlow, {
   useNodesState,
   Node,
   Edge,
+  Transform,
+  useReactFlow,
 } from "reactflow";
 import BaseCustomFlowCard from "../../Components/_FlowEditor/BaseCustomFlowCard/BaseCustomFlowCard";
 import TransferFlowCard from "../../Components/_FlowEditor/TransferFlowCard";
@@ -26,6 +28,9 @@ import OperationFlowCard from "../../Components/_FlowEditor/OperationFlowCard";
 import StartBeginFlowCard from "../../Components/_FlowEditor/StartBeginFlowCard";
 import SleepFlowCard from "../../Components/_FlowEditor/SleepFlowCard";
 import EndScheduleFlowCard from "../../Components/_FlowEditor/EndScheduleFlowCard";
+import { CustomNodeData } from "../../types/CustomNodeData";
+import { NodeSelectContext } from "../../context/NodeSelectContext";
+import { animate } from "popmotion";
 
 // Define the interfaces for the ScheduleEditorPage
 export interface ISidebarOperation {
@@ -108,6 +113,9 @@ enum ActiveTab {
   Layers,
 }
 
+const NODE_EDITOR_SIDEBAR_WIDTH = 300;
+const NODE_EDITOR_ANIMATION_OFFSET_Y = 100;
+
 const ScheduleEditorPage = () => {
   const [schedules, setSchedules] = useState<ISchedule[]>(DEFAULT_SCHEDULES);
   const [operations, setOperations] = useState<IOperation[]>(DEFAULT_OPERATIONS);
@@ -117,6 +125,7 @@ const ScheduleEditorPage = () => {
   const sidebarContainerRef = React.useRef<HTMLDivElement>(null);
 
   //Drag and drop flow editor container
+  const { setViewport, zoomIn, zoomOut } = useReactFlow();
   const flowEditorContainerRef = React.useRef<HTMLDivElement>(null);
   const [containerDimensions, setContainerDimensions] = React.useState({ width: 0, height: 0 });
   const [containerPosition, setContainerPosition] = React.useState({ x: 0, y: 0 });
@@ -125,13 +134,16 @@ const ScheduleEditorPage = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const nodeTypes = {
-    "type-transfer": TransferFlowCard,
-    "type-operation": OperationFlowCard,
-    "type-start/begin": StartBeginFlowCard,
-    "type-sleep": SleepFlowCard,
-    "type-endschedulethread": EndScheduleFlowCard,
-  };
+  const nodeTypes = useMemo(
+    () => ({
+      "type-transfer": TransferFlowCard,
+      "type-operation": OperationFlowCard,
+      "type-start/begin": StartBeginFlowCard,
+      "type-sleep": SleepFlowCard,
+      "type-endschedulethread": EndScheduleFlowCard,
+    }),
+    []
+  );
 
   const onConnect: OnConnect = useCallback(
     (params) => {
@@ -174,7 +186,6 @@ const ScheduleEditorPage = () => {
       //Remove all space from the node name
       const nodeTypeName = nodeType.name.replace(/\s/g, "");
       const nodeTypeLower = `type-${nodeTypeName.toLowerCase()}`;
-      console.log(nodeTypeLower);
       const newNode = {
         id: id,
         type: nodeTypeLower,
@@ -216,6 +227,31 @@ const ScheduleEditorPage = () => {
 
   //---------------------------------------------------------------------------------------------------
 
+  const handleTransform = useCallback(
+    (x: number, y: number, zoom: number) => {
+      setViewport({ x, y, zoom }, { duration: 800 });
+    },
+    [setViewport]
+  );
+
+  //Manage node selection
+  const handleNodeEditSelect = (node: CustomNodeData, xPos: number, yPos: number) => {
+    console.log(node, xPos, yPos);
+
+    //Check that we have a react flow instance
+    if (!reactFlowInstance) return;
+
+    //Animate the flow editor to the node accounting for the sidebar width
+    const halfContainerWidth = (containerDimensions.width - NODE_EDITOR_SIDEBAR_WIDTH) / 2;
+    const halfContainerHeight = containerDimensions.height / 2;
+
+    const targetX = xPos + NODE_EDITOR_SIDEBAR_WIDTH + halfContainerWidth;
+    const targetY = yPos + halfContainerHeight - NODE_EDITOR_ANIMATION_OFFSET_Y;
+    const zoom = 1;
+
+    handleTransform(targetX, targetY, zoom);
+  };
+
   return (
     <div className="schedule-editor-page__container">
       <HeadingComponent
@@ -224,23 +260,25 @@ const ScheduleEditorPage = () => {
       />
       <div className="schedule-editor__inner-container">
         <div className="schedule-editor__inner-container__left-side">
-          <div className="flow-designer__container" ref={flowEditorContainerRef}>
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              proOptions={proOptions}
-              onInit={setReactFlowInstance}
-              panOnScroll={true}
-              selectionOnDrag={true}
-              nodeTypes={nodeTypes}
-            >
-              <Controls />
-              <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#c5c5c5" />
-            </ReactFlow>
-          </div>
+          <NodeSelectContext.Provider value={{ triggerNodeSelect: handleNodeEditSelect }}>
+            <div className="flow-designer__container" ref={flowEditorContainerRef}>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                proOptions={proOptions}
+                onInit={setReactFlowInstance}
+                panOnScroll={true}
+                selectionOnDrag={true}
+                nodeTypes={nodeTypes}
+              >
+                <Controls />
+                <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#c5c5c5" />
+              </ReactFlow>
+            </div>
+          </NodeSelectContext.Provider>
         </div>
         <div className="schedule-editor__inner-container__right-side" ref={sidebarContainerRef}>
           <div className="schedule-sidebar__title-container">

@@ -2,6 +2,7 @@ import React from "react";
 import BaseCustomFlowCard from "./BaseCustomFlowCard/BaseCustomFlowCard";
 import { IconType } from "../IconRenderer/IconRenderer";
 import { NodeProps } from "reactflow";
+import { OperationType } from "../../types/OperationType";
 
 const StartBeginFlowCard = (props: NodeProps) => {
   return (
@@ -12,6 +13,7 @@ const StartBeginFlowCard = (props: NodeProps) => {
       title="Start / Begin"
       targetConnectorEnabled={false}
       nodeProps={props}
+      operationType={OperationType.Start}
     >
       <span>Hello</span>
     </BaseCustomFlowCard>

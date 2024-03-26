@@ -2,6 +2,7 @@ import React from "react";
 import BaseCustomFlowCard from "./BaseCustomFlowCard/BaseCustomFlowCard";
 import { IconType } from "../IconRenderer/IconRenderer";
 import { NodeProps } from "reactflow";
+import { OperationType } from "../../types/OperationType";
 
 const OperationFlowCard = (props: NodeProps) => {
   return (
@@ -11,6 +12,7 @@ const OperationFlowCard = (props: NodeProps) => {
       icon={IconType.Operation}
       title="Operation"
       nodeProps={props}
+      operationType={OperationType.Operation}
     >
       <span>Hello</span>
     </BaseCustomFlowCard>

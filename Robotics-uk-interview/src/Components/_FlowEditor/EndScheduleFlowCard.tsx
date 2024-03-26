@@ -2,6 +2,7 @@ import React from "react";
 import BaseCustomFlowCard from "./BaseCustomFlowCard/BaseCustomFlowCard";
 import { IconType } from "../IconRenderer/IconRenderer";
 import { NodeProps } from "reactflow";
+import { OperationType } from "../../types/OperationType";
 
 const EndScheduleFlowCard = (props: NodeProps) => {
   return (
@@ -12,6 +13,7 @@ const EndScheduleFlowCard = (props: NodeProps) => {
       title="End Schedule"
       sourceConnectorEnabled={false}
       nodeProps={props}
+      operationType={OperationType.End}
     >
       <span>Hello</span>
     </BaseCustomFlowCard>

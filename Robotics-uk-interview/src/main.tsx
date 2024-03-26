@@ -6,6 +6,7 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import "@fontsource/poppins";
 import "@fontsource-variable/lexend";
+import { ReactFlowProvider } from "reactflow";
 
 const theme = extendTheme({
   fonts: {
@@ -16,8 +17,10 @@ const theme = extendTheme({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <RootLayout />
-    </ChakraProvider>
+    <ReactFlowProvider>
+      <ChakraProvider theme={theme}>
+        <RootLayout />
+      </ChakraProvider>
+    </ReactFlowProvider>
   </React.StrictMode>
 );

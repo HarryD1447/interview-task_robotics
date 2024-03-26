@@ -1,10 +1,12 @@
-import React, { Children, useEffect, useState } from "react";
-import { useCallback } from "react";
-import { Handle, NodeProps, Position, SelectionMode } from "reactflow";
+import React, { Children, useContext, useEffect, useState } from "react";
+import { Handle, NodeProps, Position } from "reactflow";
 import "./BaseCustomFlowCard.scss";
 import IconRenderer, { IconType } from "../../IconRenderer/IconRenderer";
 import { AiFillSetting, AiOutlineSetting } from "react-icons/ai";
 import chroma from "chroma-js";
+import { OperationType } from "../../../types/OperationType";
+import { NodeSelectContext } from "../../../context/NodeSelectContext";
+import { CustomNodeData } from "../../../types/CustomNodeData";
 
 const handleStyle: React.CSSProperties = {
   width: "20px",
@@ -17,8 +19,9 @@ interface IBaseCustomFlowCardProps {
   color: string;
   title: string;
   icon: IconType;
-  children?: React.ReactNode;
   nodeProps: NodeProps;
+  operationType: OperationType;
+  children?: React.ReactNode;
   targetConnectorEnabled?: boolean;
   sourceConnectorEnabled?: boolean;
 }
@@ -30,27 +33,21 @@ const BaseCustomFlowCard = ({
   icon,
   children,
   nodeProps,
+  operationType,
   targetConnectorEnabled = true,
   sourceConnectorEnabled = true,
 }: IBaseCustomFlowCardProps) => {
-  // type RbgColorType = { r: number; g: number; b: number };
-  // const [colorAsRBG, setColorAsRBG] = useState<RbgColorType>({
-  //   r: 0,
-  //   g: 0,
-  //   b: 0,
-  // });
+  const { triggerNodeSelect } = useContext(NodeSelectContext);
 
-  // //Convert the color to RGB
-  // useEffect(() => {
-  //   const rgbColor = chroma(color).rgb();
+  const openEditorMenu = () => {
+    const nodeData: CustomNodeData = {
+      actionType: operationType,
+      id: nodeProps.id,
+    };
 
-  //   const colorAsRBG = {
-  //     r: rgbColor[0],
-  //     g: rgbColor[1],
-  //     b: rgbColor[2],
-  //   };
-  //   setColorAsRBG(colorAsRBG);
-  // }, [color]);
+    //Open the editor menu
+    triggerNodeSelect(nodeData, -nodeProps.xPos, -nodeProps.yPos);
+  };
 
   return (
     <>
@@ -66,6 +63,7 @@ const BaseCustomFlowCard = ({
         />
       )}
       <div
+        onDoubleClick={openEditorMenu}
         className="base-custom-flow-card__inner-container"
         style={{
           backgroundColor: bgColor,
@@ -92,7 +90,11 @@ const BaseCustomFlowCard = ({
           </span>
           {!nodeProps.selected && <IconRenderer type={icon} color={color} fontSize={18} />}
           {nodeProps.selected && (
-            <AiOutlineSetting color={color} className="base-flow-card__settings-icon" />
+            <AiOutlineSetting
+              color={color}
+              className="base-flow-card__settings-icon"
+              onClick={openEditorMenu}
+            />
           )}
         </div>
         <div className="base-flow-card__body-container">{children}</div>

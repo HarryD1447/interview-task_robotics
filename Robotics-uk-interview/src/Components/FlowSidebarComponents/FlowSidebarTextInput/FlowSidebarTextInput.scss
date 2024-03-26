@@ -3,8 +3,33 @@
   width: 100%;
   padding: 3px;
   padding-left: 10px;
-  border-radius: 3px;
-  border: 1px solid var(--line-color);
   outline: none;
   font-size: 16px;
+}
+
+.flow-sidebar-text-input__container {
+  width: 100%;
+  display: flex;
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+}
+
+.flow-sidebar-text-input__copy-container {
+  // background-color: red;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--line-color);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.flow-sidebar-text-input__copy-container--hover {
+  color: var(--light-text);
+}
+
+.flow-sidebar-text-input__copy-icon {
+  font-size: 22px;
+  margin-left: 2px;
 }
